@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DNSpeed</string>
+    <string name="large_text"></string>
+    <string name="run_test">Run test...</string>
+    <string name="clear_all_urls">Clear all URLs</string>
+    <string name="clear_main_view">Clear test results</string>
+</resources>
