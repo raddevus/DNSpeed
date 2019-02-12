@@ -1,13 +1,18 @@
 package us.raddev.dnspeed;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +21,25 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
+import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
+import static android.telephony.TelephonyManager.PHONE_TYPE_NONE;
+import static android.telephony.TelephonyManager.PHONE_TYPE_SIP;
+import static android.telephony.TelephonyManager.SIM_STATE_ABSENT;
+import static android.telephony.TelephonyManager.SIM_STATE_CARD_IO_ERROR;
+import static android.telephony.TelephonyManager.SIM_STATE_CARD_RESTRICTED;
+import static android.telephony.TelephonyManager.SIM_STATE_NETWORK_LOCKED;
+import static android.telephony.TelephonyManager.SIM_STATE_NOT_READY;
+import static android.telephony.TelephonyManager.SIM_STATE_PERM_DISABLED;
+import static android.telephony.TelephonyManager.SIM_STATE_PIN_REQUIRED;
+import static android.telephony.TelephonyManager.SIM_STATE_PUK_REQUIRED;
+import static android.telephony.TelephonyManager.SIM_STATE_READY;
+import static android.telephony.TelephonyManager.SIM_STATE_UNKNOWN;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView outText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,14 +58,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setText(int id){
+    private void setText(int id) {
         LayoutInflater li = LayoutInflater.from(getBaseContext());
         final View v = li.inflate(R.layout.configvalues, null);
 
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(v.getContext());
 
-        builder.setMessage( "Add new URL").setCancelable(false)
+        builder.setMessage("Add new URL").setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -102,9 +123,8 @@ public class MainActivity extends AppCompatActivity {
             String urls = urlPrefs.getString("urls", "");
 
             String[] allUrls = urls.split(",");
-            outText.append("\n");
-            for (int i = 0; i < allUrls.length; i++)
-            {
+
+            for (int i = 0; i < allUrls.length; i++) {
                 new DNSWorker(this).execute(allUrls[i]);
             }
             return true;
@@ -119,6 +139,88 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.clear_main_view) {
             outText.setText("");
+        }
+
+        if (id == R.id.get_phone_details) {
+            TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+
+            }
+            String phoneDetails = tMgr.getLine1Number() + "\n";
+            phoneDetails += "MMS User agent: " + tMgr.getMmsUserAgent() + "\n";
+            phoneDetails += "Device software ver. - " + tMgr.getDeviceSoftwareVersion() + "\n";
+            phoneDetails += "Phone type: ";
+            switch (tMgr.getPhoneType()){
+                case PHONE_TYPE_CDMA :
+                {
+                    phoneDetails += "CDMA\n";
+                    break;
+                }
+                case PHONE_TYPE_GSM :{
+                    phoneDetails += "GSM\n";
+                    break;
+                }
+                case PHONE_TYPE_NONE:{
+                    phoneDetails += "NONE\n";
+                    break;
+                }
+                case PHONE_TYPE_SIP:{
+                    phoneDetails += "SIP\n";
+                    break;
+                }
+            }
+            phoneDetails += "SIM State - ";
+            switch (tMgr.getSimState()){
+                case SIM_STATE_UNKNOWN :{
+                    phoneDetails += "UNKNOWN\n";
+                    break;
+                }
+                case SIM_STATE_ABSENT :{
+                    phoneDetails += "ABSENT\n";
+                    break;
+                }
+                case SIM_STATE_PIN_REQUIRED :{
+                    phoneDetails += "PIN REQUIRED\n";
+                    break;
+                }
+                case SIM_STATE_PUK_REQUIRED:{
+                    phoneDetails += "PUK REQUIRED\n";
+                    break;
+                }
+                case SIM_STATE_NETWORK_LOCKED :{
+                    phoneDetails += "NETWORK LOCKED\n";
+                    break;
+                }
+                case SIM_STATE_READY :{
+                    phoneDetails += "READY\n";
+                    break;
+                }
+                case SIM_STATE_NOT_READY:{
+                    phoneDetails += "NOT READY\n";
+                    break;
+                }
+                case SIM_STATE_PERM_DISABLED: {
+                    phoneDetails += "PERM DISABLED\n";
+                    break;
+                }
+                case SIM_STATE_CARD_IO_ERROR :{
+                    phoneDetails += "CARD IO ERROR\n";
+                    break;
+                }
+                case SIM_STATE_CARD_RESTRICTED:{
+                    phoneDetails += "CARD RESTRICTED\n";
+                    break;
+                }
+            }
+
+            outText.setText(phoneDetails);
         }
 
         return super.onOptionsItemSelected(item);

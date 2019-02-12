@@ -17,4 +17,9 @@
         android:orderInCategory="102"
         android:title="@string/clear_main_view"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/get_phone_details"
+        android:orderInCategory="103"
+        android:title="@string/get_phone_details"
+        app:showAsAction="never" />
 </menu>
