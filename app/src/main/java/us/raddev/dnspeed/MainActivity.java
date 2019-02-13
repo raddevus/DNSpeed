@@ -1,10 +1,12 @@
 package us.raddev.dnspeed;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -219,7 +221,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
             }
-
+            phoneDetails += "voicemail # : " + tMgr.getVoiceMailNumber() + "\n";
+            phoneDetails += "SIM Serial #: " + tMgr.getSimSerialNumber() + "\n";
+            phoneDetails += "Network Operator Name: " + tMgr.getNetworkOperatorName() + "\n";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                phoneDetails += "IMEI: " + tMgr.getImei() + "\n";
+                phoneDetails += "MEID: " + tMgr.getMeid() + "\n";
+                phoneDetails += "Visual VMail Pkg Name: " + tMgr.getVisualVoicemailPackageName() + "\n";
+            }
             outText.setText(phoneDetails);
         }
 
