@@ -22,4 +22,9 @@
         android:orderInCategory="103"
         android:title="@string/get_phone_details"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/take_picture"
+        android:orderInCategory="104"
+        android:title="@string/take_picture"
+        app:showAsAction="never" />
 </menu>

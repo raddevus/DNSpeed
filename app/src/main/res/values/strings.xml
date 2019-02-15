@@ -5,4 +5,5 @@
     <string name="clear_all_urls">Clear all URLs</string>
     <string name="clear_main_view">Clear test results</string>
     <string name="get_phone_details">Get phone details</string>
+    <string name="take_picture">Take picture...</string>
 </resources>
